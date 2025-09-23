@@ -51,6 +51,7 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        self.root.insert(value);
     }
 
     // Search for a value in the BST
@@ -67,6 +68,7 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        
     }
 }
 
