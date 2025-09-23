@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -34,15 +33,17 @@ impl<T> Default for LinkedList<T> {
         Self::new()
     }
 }
-
-impl<T> LinkedList<T> {
+impl<T> LinkedList<T>{
     pub fn new() -> Self {
         Self {
             length: 0,
             start: None,
             end: None,
         }
-    }
+    }    
+}
+
+impl<T:Clone + Ord> LinkedList<T> {
 
     pub fn add(&mut self, obj: T) {
         let mut node = Box::new(Node::new(obj));
@@ -69,14 +70,53 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut ret = LinkedList::<T>::new();
+        
+        let mut ptr_a = list_a.start;
+        let mut ptr_b = list_b.start;
+        while ptr_a.is_some() || ptr_b.is_some(){
+            let (src,pick_a) = match (ptr_a,ptr_b){
+                (Some(ap),Some(bp)) =>{
+                    let va = unsafe{&ap.as_ref().val};
+                    let vb = unsafe{&bp.as_ref().val};
+
+                    if va<=vb {
+                        (va.clone(),true)
+                    }
+                    else {
+                        (vb.clone(),false)
+                    }
+                },
+                (Some(ap),None) => {
+                    (unsafe{ap.as_ref().val.clone()},true)
+                },
+                (None,Some(bp)) =>{
+                    (unsafe{bp.as_ref().val.clone()},false)
+                },
+                _ => unreachable!(),
+            };
+            
+            ret.add(src);
+            if pick_a {
+                ptr_a = unsafe{ptr_a.unwrap().as_ref().next};
+            }
+            else{
+                ptr_b = unsafe{ptr_b.unwrap().as_ref().next};
+            }
         }
+        ret.length = list_a.length+list_b.length;
+
+        list_a.start = None;
+        list_a.end = None;
+        list_a.length = 0;
+        list_b.start = None;
+        list_b.end = None;
+        list_b.length = 0;
+
+		ret
 	}
 }
 
