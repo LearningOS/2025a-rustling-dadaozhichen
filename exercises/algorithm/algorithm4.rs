@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,13 +50,24 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
-        self.root.insert(value);
+        if let Some(root) =&mut self.root {
+            root.insert(value);
+        }
+        else {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }
     }
 
     // Search for a value in the BST
-    fn search(&self, value: T) -> bool {
+    fn search(& self, value: T) -> bool {
         //TODO
-        true
+
+        if let Some(root) = & self.root{
+            root.search(value)
+        }
+        else {
+            false 
+        }
     }
 }
 
@@ -66,9 +76,51 @@ where
     T: Ord,
 {
     // Insert a node into the tree
-    fn insert(&mut self, value: T) {
+    fn insert(&mut self, value: T) -> bool {
         //TODO
-        
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                if let Some(left) = &mut self.left {
+                    left.insert(value)
+                }
+                else{
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                    true 
+                }
+
+            },
+            Ordering::Greater => {
+                if let Some(right) = &mut self.right {
+                    right.insert(value)
+                }
+                else{
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                    true
+                }
+            },
+            Ordering::Equal => false,
+        }
+    }
+    fn search(& self,value: T) ->bool {
+        match value.cmp(&self.value) {
+            Ordering::Equal => true,
+            Ordering::Less => {
+                if let Some(left) = & self.left {
+                    left.search(value)
+                }
+                else {
+                    false
+                }
+            },
+            Ordering::Greater => {
+                if let Some(right) = & self.right {
+                    right.search(value)
+                }
+                else {
+                    false
+                }
+            },
+        }
     }
 }
 
