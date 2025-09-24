@@ -2,10 +2,10 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
+use std::clone::Clone;
 
 pub struct Heap<T>
 where
@@ -35,10 +35,26 @@ where
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+    pub fn pop(&mut self) -> Option<T>{
+        if self.count ==0 {
+            return None; 
+        }
+        self.items.swap(1,self.count);
+        let root = self.items.pop().unwrap();
+        
+        self.count-=1;
+        if self.count > 0 {
+            self.sift_down(1);
+        }
+        Some(root) 
+    }
 
     pub fn add(&mut self, value: T) {
         //TODO
-    }
+        self.items.push(value);
+        self.count+=1;
+        self.sift_up(self.count);
+    } 
 
     fn parent_idx(&self, idx: usize) -> usize {
         idx / 2
@@ -58,8 +74,40 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let l = self.left_child_idx(idx);
+        let r = self.right_child_idx(idx);
+        if r>self.count {
+            l 
+        }
+        else if (self.comparator)(&self.items[l],&self.items[r]){
+            l
+        }
+        else {
+            r 
+        }
     }
+    fn sift_up(&mut self,mut idx:usize) {
+        while idx>1{
+            let p = self.parent_idx(idx);
+            if !(self.comparator)(&self.items[idx],&self.items[p]){
+                break;
+            }
+            self.items.swap(p,idx);
+            idx = p;
+        }
+    }
+    fn sift_down(&mut self,mut idx:usize) {
+        while self.children_present(idx){
+            let child = self.smallest_child_idx(idx);
+            if !(self.comparator)(&self.items[child],&self.items[idx]) {
+                break;
+            } 
+            self.items.swap(child,idx);
+            idx = child;
+
+        }
+    }
+    
 }
 
 impl<T> Heap<T>
@@ -85,7 +133,7 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		self.pop()
     }
 }
 
